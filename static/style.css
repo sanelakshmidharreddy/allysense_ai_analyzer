@@ -453,3 +453,94 @@ input, textarea{
         line-height: 1.5;
     }
 }
+
+/* MOBILE TABLE FIX */
+@media screen and (max-width: 768px){
+
+    .table-container{
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 15px;
+    }
+
+    table{
+        min-width: 700px;
+        border-collapse: collapse;
+    }
+
+    th, td{
+        padding: 12px;
+        text-align: center;
+        font-size: 14px;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    td:nth-child(2){
+        min-width: 220px;
+        line-height: 1.6;
+    }
+
+    .dashboard-container{
+        padding: 15px;
+        width: 100%;
+    }
+
+    h1{
+        font-size: 2.4rem;
+    }
+
+    .card{
+        padding: 20px;
+    }
+
+    canvas{
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    button{
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+
+.review-card{
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.review-card h3{
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.review-message{
+    font-size: 15px;
+    line-height: 1.7;
+    color: #f1f1f1;
+    margin-bottom: 15px;
+}
+
+.review-footer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.positive-badge,
+.confidence-badge{
+    background: rgba(255,255,255,0.12);
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+}
