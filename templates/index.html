@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sentiment Analyzer</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+   <h1>AllySense AI 🚀</h1>
+
+<p class="tagline">
+    Turning emotions into intelligent insights.
+</p>
+
+    <form method="POST" id="analyzeForm">
+<input
+type="text"
+name="username"
+placeholder="Enter your name"
+required
+class="input-box"
+/>
+        <input
+            type="text"
+            name="text"
+            placeholder="Enter your review..."
+            required
+        >
+
+    <button type="submit" id="analyzeBtn">
+        Analyze
+    </button>
+
+</form>
+
+<div class="loader" id="loader"></div>
+
+    {% if prediction %}
+
+    <div class="result">
+
+        <h2>
+            {{ emoji }} Prediction:
+            <span class="{{ prediction.lower() }}">
+                {{ prediction }}
+            </span>
+        </h2>
+
+        <h3>
+            Confidence: {{ confidence }}%
+        </h3>
+
+    </div>
+
+    {% endif %}
+
+    <a href="/dashboard" class="dashboard-btn">
+        Open Dashboard 📊
+    </a>
+
+</div>
+<script>
+
+const form = document.getElementById("analyzeForm");
+const loader = document.getElementById("loader");
+
+form.addEventListener("submit", () => {
+
+    loader.style.display = "block";
+
+});
+
+</script>
+</body>
+
+</html>

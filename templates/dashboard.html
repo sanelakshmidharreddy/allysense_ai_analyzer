@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AllySense AI Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        body{
+            margin:0;
+            padding:0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg,#0f172a,#1e3a8a,#312e81);
+            color:white;
+            min-height:100vh;
+        }
+
+        .dashboard{
+            width:90%;
+            max-width:1200px;
+            margin:40px auto;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(15px);
+            border-radius:25px;
+            padding:40px;
+            box-shadow:0 0 40px rgba(0,0,0,0.4);
+        }
+
+        h1{
+            text-align:center;
+            font-size:45px;
+            margin-bottom:30px;
+        }
+
+        .stats{
+            display:flex;
+            justify-content:space-around;
+            flex-wrap:wrap;
+            gap:20px;
+            margin-bottom:40px;
+        }
+
+        .card{
+            background: rgba(255,255,255,0.1);
+            padding:25px;
+            width:250px;
+            border-radius:20px;
+            box-shadow:0 0 20px rgba(255,255,255,0.1);
+            text-align:center;
+            transition:0.3s;
+        }
+
+        .card:hover{
+            transform:translateY(-8px);
+        }
+
+        .card h2{
+            font-size:22px;
+        }
+
+        .card p{
+            font-size:40px;
+            font-weight:bold;
+        }
+
+        .chart-container{
+            width:100%;
+            max-width:700px;
+            height:450px;
+            margin:40px auto;
+            background: rgba(255,255,255,0.08);
+            padding:20px;
+            border-radius:25px;
+        }
+
+        canvas{
+            width:100% !important;
+            height:400px !important;
+        }
+
+        .history-box{
+            margin-top:40px;
+            overflow-x:auto;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:20px;
+        }
+
+        table th{
+            background:#06b6d4;
+            padding:15px;
+            font-size:18px;
+        }
+
+        table td{
+            background: rgba(255,255,255,0.06);
+            padding:15px;
+            text-align:center;
+        }
+
+        tr:hover{
+            background: rgba(255,255,255,0.1);
+            transition:0.3s;
+        }
+
+        .positive-badge{
+            color:#22c55e;
+            font-weight:bold;
+        }
+
+        .negative-badge{
+            color:#ef4444;
+            font-weight:bold;
+        }
+
+        .progress-bar{
+            width:100%;
+            background:#1e293b;
+            border-radius:20px;
+            overflow:hidden;
+        }
+
+        .progress-fill{
+            background: linear-gradient(90deg,#06b6d4,#22c55e);
+            padding:5px;
+            font-size:14px;
+            font-weight:bold;
+            color:white;
+        }
+
+        .back-btn{
+            text-align:center;
+            margin-top:40px;
+        }
+
+        .back-btn a{
+            text-decoration:none;
+            color:white;
+            background:#06b6d4;
+            padding:14px 35px;
+            border-radius:12px;
+            font-size:18px;
+            transition:0.3s;
+        }
+
+        .back-btn a:hover{
+            background:#0891b2;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <h1>📊 AllySense AI Dashboard</h1>
+
+    <div class="stats">
+
+        <div class="card">
+            <h2>Total Predictions</h2>
+            <p>{{ total }}</p>
+        </div>
+
+        <div class="card">
+            <h2>Positive Reviews</h2>
+            <p>{{ positive }}</p>
+        </div>
+
+        <div class="card">
+            <h2>Negative Reviews</h2>
+            <p>{{ negative }}</p>
+        </div>
+
+    </div>
+
+    <div class="chart-container">
+
+        <canvas id="sentimentChart"></canvas>
+
+    </div>
+
+    <div class="history-box">
+
+        <h2>📝 Recent Reviews</h2>
+
+        <table>
+
+            <tr>
+                <th>User</th>
+                <th>Review</th>
+                <th>Prediction</th>
+                <th>Confidence</th>
+                <th>Time</th>
+            </tr>
+
+            {% for item in history %}
+
+            <tr>
+
+                <td>{{ item[0] }}</td>
+
+                <td>{{ item[1] }}</td>
+
+                <td>
+
+                    {% if item[2] == "Positive" %}
+
+                        <span class="positive-badge">
+                            🟢 Positive
+                        </span>
+
+                    {% else %}
+
+                        <span class="negative-badge">
+                            🔴 Negative
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+                <td>
+
+                    <div class="progress-bar">
+
+                        <div
+                        class="progress-fill"
+                        style="width: {{ item[3] }}%;"
+                        >
+
+                            {{ item[3] }}%
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+                <td>{{ item[4] }}</td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+    <div class="back-btn">
+        <a href="/">⬅ Back Home</a>
+    </div>
+
+</div>
+
+<script>
+
+const ctx = document.getElementById('sentimentChart').getContext('2d');
+
+new Chart(ctx, {
+
+    type: 'doughnut',
+
+    data: {
+
+        labels: ['Positive', 'Negative'],
+
+        datasets: [{
+
+            data: [{{ positive }}, {{ negative }}],
+
+            backgroundColor: [
+                '#22c55e',
+                '#ef4444'
+            ],
+
+            borderWidth: 0,
+
+            hoverOffset: 20
+
+        }]
+    },
+
+    options: {
+
+        responsive: true,
+
+        maintainAspectRatio: false,
+
+        plugins: {
+
+            legend: {
+
+                labels: {
+
+                    color: 'white',
+
+                    font: {
+                        size: 18
+                    }
+                }
+            }
+        }
+    }
+});
+
+</script>
+
+</body>
+</html>
