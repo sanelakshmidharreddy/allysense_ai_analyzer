@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import joblib
 import sqlite3
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 
@@ -26,14 +27,9 @@ cursor = connection.cursor()
 # =========================
 # CREATE TABLE
 # =========================
-# DELETE OLD TABLE
-
-cursor.execute("DROP TABLE IF EXISTS history")
-
-# CREATE NEW TABLE
 
 cursor.execute('''
-CREATE TABLE history (
+CREATE TABLE IF NOT EXISTS history (
 
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
@@ -87,15 +83,19 @@ def home():
 
             # POSITIVE / NEGATIVE
 
-            # CONFIDENCE LOGIC
             if result == 1:
+
                 prediction = "Positive"
                 emoji = "😊"
+
             else:
+
                 prediction = "Negative"
                 emoji = "😠"
 
-            current_time: str = datetime.now().strftime(
+            # CURRENT TIME
+
+            current_time = datetime.now().strftime(
                 "%d-%m-%Y %H:%M:%S"
             )
 
@@ -190,8 +190,11 @@ def dashboard():
 # RUN APP
 # =========================
 
-import os
-
 if __name__ == "__main__":
+
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+
+    app.run(
+        host="0.0.0.0",
+        port=port
+    )
